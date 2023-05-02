@@ -79,6 +79,8 @@ Arquivos: app/Console/Kernel.php (na function schedule onde você consegue setar
 
 BANCO DE DADOS:
 
+![produtos e cadastro banco](https://github.com/Dipezork/Products-Parser-20230105/blob/master/img2.png)
+
 Na descrição do teste tinha a sugestão de utilizar o banco de dados MongoDB. Nunca havia utilizado, mas experimentei, testei e tive um pouco de dificuldade por falta de prática, como na mesma sugestão possibilitou a escolha de outro banco, peguei um que estava mais habituado: MySQL.
 Como vão ver no video, toda manipulação de dados foi por meio do CMD do ubuntu e das migrations do laravel, criação de banco, usuário, tabela, querys em geral... Aproveitei a oportunidade para me inteirar da prática via CMD, sempre fui bem acostumado com a interface visual para gerenciar banco de dados MySQL, como por exemplo: MySQL Workbench, phpMyAdmin(web). Mas gostei de ter praticado este desafio pelo CMD, me deu mais opções de produtividade. É importante ressaltar também que utilizar o meio das migrations do Laravel é muito prático, ponto positivo para o framework! 
 
