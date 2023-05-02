@@ -101,6 +101,7 @@ Arquivo dos testes unitarios: tests/unit/ProductControllerTest.php
 
 ===========================================
 
+Video: https://www.loom.com/embed/a718d939156d42aa90e3588282afde5d
 
 This is a challenge by Coodesh
 
