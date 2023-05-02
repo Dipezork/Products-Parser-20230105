@@ -90,6 +90,8 @@ Arquivos das migrations: database/migrations
 
 TESTES UNITARIOS:
 
+![produtos e cadastro banco](https://github.com/Dipezork/Products-Parser-20230105/blob/master/img1.png)
+
 Devo deixar claro, nunca tive o hábito de criar testes unitários, mas depois deste teste criei gosto pela prática, e fiquei feliz de ter aprendido.
 
 Na estrutura tests/unit/
