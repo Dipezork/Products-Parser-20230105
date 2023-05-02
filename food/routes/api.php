@@ -33,6 +33,6 @@ Route::get('/products/{code}', [ProductController::class, 'show']);
 //endpoint GET /products
 Route::get('/products', [ProductController::class, 'index']);
 
-//import
-Route::get('/import', 'App\Http\Controllers\ImportController@import');
+
+
 

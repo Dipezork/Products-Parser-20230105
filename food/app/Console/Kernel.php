@@ -7,6 +7,12 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+
+    protected $commands = [
+        // ...
+        Commands\ImportProductsCommand::class,
+    ];
+
     /**
      * Define the application's command schedule.
      *
@@ -15,6 +21,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+
+       // $schedule->command('import:products')->dailyAt(config('import.time'));
+        $schedule->command('import:products')->daily();
+
         $schedule->call(function () {
             $importController = new \App\Http\Controllers\ImportController();
             $importController->import();

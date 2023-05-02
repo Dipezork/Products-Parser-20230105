@@ -18,6 +18,7 @@ return [
     'import_time' => env('IMPORT_TIME', '02:00'),
 
     /* ------------------- -------------- -------------- --------------- ------------ */
+    'import_products_at' => env('APP_IMPORT_PRODUCTS_AT', '03:30'),
 
     'name' => env('APP_NAME', 'Laravel'),
 

@@ -4,10 +4,113 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
+
+    public function importData()
+    {
+        // Cria o cliente GuzzleHttp
+        $client = new Client();
+
+        // Obtém a lista de arquivos do Open Food Facts
+        $filesResponse = $client->get('https://challenges.coode.sh/food/data/json/index.txt');
+        $files = [];
+        if ($filesResponse->getStatusCode() === 200) {
+            $files = explode("\n", $filesResponse->getBody());
+        }
+
+        // Importa somente os 100 primeiros registros de cada arquivo
+        $limit = 100;
+
+        // Lista secundária de controle dos históricos das importações
+        $imported = collect();
+
+        // Percorre os arquivos e importa os produtos
+        foreach ($files as $file) {
+            if (!is_string($file) || empty($file)) {
+                continue;
+            }
+
+            // Obtém o conteúdo do arquivo JSON
+            $jsonResponse = $client->get("https://challenges.coode.sh/food/data/json/{$file}");
+            $json = [];
+            if ($jsonResponse->getStatusCode() === 200) {
+                $json = json_decode($jsonResponse->getBody());
+            }
+
+            // Contador de produtos importados
+            $count = 0;
+
+            // Percorre os produtos do arquivo e os importa
+            if (is_iterable($json)) {
+                foreach ($json as $item) {
+                    // Limita o número de produtos importados
+                    if ($count >= $limit) {
+                        break;
+                    }
+
+                    // Verifica se o item já foi importado antes
+                    if ($imported->contains('code', $item->code)) {
+                        continue;
+                    }
+
+                    // Cria um array com os dados do produto para serem inseridos no banco
+                    $data = [
+                        'code' => $item->code,
+                        'status' => 'draft',
+                        'imported_t' => Carbon::now(),
+                        'product_name' => $item->product_name,
+                        'quantity' => $item->quantity,
+                        'brands' => $item->brands,
+                        'categories' => $item->categories,
+                        'labels' => $item->labels,
+                        'cities' => $item->cities,
+                        'purchase_places' => $item->purchase_places,
+                        'stores' => $item->stores,
+                        'ingredients_text' => $item->ingredients_text,
+                        'traces' => $item->traces,
+                        'serving_size' => $item->serving_size,
+                        'serving_quantity' => $item->serving_quantity,
+                        'nutriscore_score' => $item->nutriscore_score,
+                        'nutriscore_grade' => $item->nutriscore_grade,
+                        'main_category' => $item->main_category,
+                        'image_url' => $item->image_url,
+                        'imported_t' => now(), // adiciona a data e hora da importação
+                        'status' => 'imported' // define o status como importado
+                        ];
+
+
+                        // Insere o produto no banco de dados
+        DB::table('products')->insert($data);
+
+        // Registra o item como importado
+        $imported->push([
+            'code' => $item->code,
+            'status' => 'imported',
+            'imported_t' => now(),
+        ]);
+
+        // Incrementa o contador de produtos importados
+        $count++;
+           }
+     }
+}
+
+// Define a mensagem de sucesso
+$message = "Importação realizada com sucesso. Foram importados ".$imported->count()." produtos.";
+
+// Retorna a mensagem de sucesso
+return response()->json([
+    'message' => $message
+]);
+
+        }
+
     /**
      * Show API details.
      *
@@ -18,6 +121,7 @@ class ProductController extends Controller
    //  "publicado" do banco de dados, com paginação, e os retorna como JSON.
    //  O número de itens por página é definido pela variável $perPage e a página atual
    //  é obtida a partir do objeto de solicitação usando $request->input('page', 1).
+
    public function index(Request $request)
     {
 
