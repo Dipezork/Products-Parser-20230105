@@ -92,12 +92,10 @@ TESTES UNITARIOS:
 
 ![produtos e cadastro banco](https://github.com/Dipezork/Products-Parser-20230105/blob/master/img1.png)
 
-Devo deixar claro, nunca tive o hábito de criar testes unitários, mas depois deste teste criei gosto pela prática, e fiquei feliz de ter aprendido.
-
 Na estrutura tests/unit/
 Criei um arquivo chamado ProductControllerTest.php e nele desenvolvi um codigo para testShow() e testIndex(), com o intuito de testar 2 métodos criados na controller ProductController. Tive alguns problemas neste desenvolvimento e alguns aprendizados importantes, tais como:
 É interessante criar um banco de dados alternativo apenas para testes, para que não haja conflitos entre os dados testados e os originais.
-Para tal, entendi que seria interessante criar um banco de dados a parte e um .env.testing também a parte para identificar os testes. (Não cheguei a configurar o .env.testing, mas achei interessante a ideia e foi muito bom aprender sobre).
+Para tal, entendi que seria interessante criar um banco de dados a parte e um .env.testing também a parte para identificar os testes. (Não cheguei a configurar o .env.testing).
 
 Como optei por não criar um banco de dados alternativos, criei manualmente dados ficticios de usuario e de produto para poder concluir os testes unitarios e ver na prática como que funciona. Fiquei bem feliz quando, após um amontoado de erros durante os testes unitarios, eu finalmente consegui ajustar o código e pude ver o verdinho do PASS.
 
