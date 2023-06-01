@@ -1,109 +1,77 @@
-Autor: Gabriel Tarozzo Ferreira Lustosa
+# Desafio de Desenvolvimento de API e Integração
 
-Titulo: Backend Challenge 20230105
-Descrição: Esse é um projeto desenvolvido em formato de teste para vaga de desenvolvedor PHP/laravel Developer Pleno.
-Nele tive vários desafios para desenvolver uma REST API para utilizar os dados do projeto Open Food Facts, que é um banco de dados aberto com informação nutricional de diversos produtos alimentícios.
+Neste projeto, foi realizado um desafio para desenvolver uma REST API utilizando o framework Laravel, com o objetivo de utilizar os dados do projeto Open Food Facts, que é um banco de dados aberto com informações nutricionais de diversos produtos alimentícios.
 
-==========================================
+## Tecnologias Utilizadas
 
-Lista com linguagem, framework e/ou tecnologias usadas:
-Sistema Operacional: Ubuntu
-Linguagem: PHP
-Framework: Laravel
-Banco de dados: MySQL
-API externa: Open Food Facts
-Bibliotecas: Diversas usadas pelo Laravel, tais como:
-Biblioteca de requisições HTTP: Guzzle (usada pelo Laravel)
-Biblioteca para manipulação de datas: Carbon (usada pelo Laravel)
+- Sistema Operacional: Ubuntu
+- Linguagem: PHP
+- Framework: Laravel
+- Banco de Dados: MySQL
+- API Externa: Open Food Facts
+- Bibliotecas: Diversas bibliotecas utilizadas pelo Laravel, como:
+  - Biblioteca de requisições HTTP: Guzzle (utilizada pelo Laravel)
+  - Biblioteca para manipulação de datas: Carbon (utilizada pelo Laravel)
 
-==========================================
+## Processo de Desenvolvimento
 
-Processo de investigação para o desenvolvimento da atividade:
+Durante o desenvolvimento deste projeto, foram seguidas boas práticas de engenharia de software. Abaixo, descrevo as etapas envolvidas em cada processo de desenvolvimento, destacando as atividades relevantes realizadas:
 
-Criei alguns arquivos a mais no projeto, deixei salvo no mesmo com o intuito de deixar como material para estudo futuramente. Dito isso, vou deixar os arquivos importantes de cada tema marcados ao final de cada, para que seja analisado para o teste.
+### CRUD e Rotas (Controller)
 
-Abaixo separei por temas cada processo de desenvolvimento, com um breve resumo do que foi feito;
+A criação do CRUD e das rotas foi uma etapa que fluíu bem, uma vez que já estou familiarizado com o ambiente de controllers e rotas do Laravel. Essa estrutura é uma das minhas preferidas e, por isso, foi possível criar facilmente o sistema CRUD e as rotas especificadas no desafio.
 
-==========================================
+Principais arquivos envolvidos:
 
-CRUD E ROTAS (CONTROLLER):
+- `Http/Controllers/ProductController.php`
+- `routes/api.php`
+- `routes/web.php`
 
-Já estou acostumado com esse ambiente de controllers e rotas do laravel, inclusive, é um tipo de estrutura que me agrada muito, e que aprendi a gostar muito. E gostar do FrameWork + a linguagem me motiva muito a estudar e aprender coisas novas. Nessa parte fluiu bem com a criação do CRUD com as especificações do desafio, com pouca pesquisa eu consegui montar um sistema CRUD e as rotas.
+### API e Integração
 
-Pasta: Http/Controllers/ProductController.php
-       routes/api.php
-       routes/web.php
+A etapa de API e integração foi o maior desafio encontrado durante o projeto. Foram enfrentados problemas relacionados ao tamanho do JSON e a descompactação de arquivos no formato `.gz`.
 
-==========================================
+Apesar de ter tentado abordagens mais convencionais para lidar com esses problemas, como ajustar o tempo de processamento e aumentar os limites impostos pelo Laravel, não obtive sucesso. As tentativas de ler o arquivo JSON completo ou em partes utilizando `foreach` também não foram efetivas.
 
-API E INTEGRAÇÃO:
+Após uma extensa pesquisa, descobri um comando shell que resolveu os problemas enfrentados: `curl -s $fileUrl | gzip -d | jq -n '[inputs | select(. != null)] | .[:10]'`.
 
-Aqui foi de fato meu maior desafio, mas não tenho certeza se os problemas que enfrentei eram pré-programados pelo desafio.
-Talvez, com um pouco mais de tempo e dedicação eu consegui-se chegar a uma melhor solução, porém, encontrei uma solução que solucionou meus problemas. Meus problemas foram: Peso do json, descompactar arquivo .gz.
+Esse comando utiliza o `curl` para fazer uma requisição HTTP para a URL especificada (`$fileUrl`), o `gzip` para descompactar o conteúdo e o `jq` para processar o JSON resultante. Com isso, pude explorar e separar os dados conforme necessário.
 
-Embora eu tentasse os meios mais naturais para a conclusão do desafio, eu sempre era barrado por um vilão, o tempo de processamento, e sempre ao tentar ajustar esse tempo de processamento, era um efeito dominó: não dava para deixar o código ler o arquivo JSON inteiro. Pois estourava algo que o laravel impôs que era o limite. Tentei alterar os limites na marra, mas mesmo assim não dava certo. tanto de tempo de processamento, quanto de limite que já estavam ilimitados e o problema persistia. Tentei foreach no código para ler o documento em partes, tentei utilizar outros métodos do proprio laravel para tentar ler o arquivo de uma maneira diferente, para fazer a descompactação e json_decode após, mas sem sucesso. E após algumas tentativas descobri algumas maneiras de, com o arquivo baixado no meu computador, explorar e separar esses dados, manipulando da maneira que eu gostaria. Mas, não estava bom, não é ideal deixar esses dados no computador. Quando finalmente após muita pesquisa, descobri um comando shell que me salvaria: curl -s $fileUrl | gzip -d | jq -n '[inputs | select(. != null)] | .[:10].
+Apesar de não ser uma solução ideal, pois requer o download do arquivo no computador local, foi a alternativa encontrada para contornar as limitações impostas pelo Laravel.
 
-Esse comando é uma sequência de pipelines em um shell script que usa três programas diferentes: curl, gzip e jq. 
+Principais arquivo envolvido:
 
-Aqui está o que cada parte do comando faz:
+- `app/Console/Commands/ImportProductsCommand.php`
 
-curl -s $fileUrl: Esse comando usa o curl para fazer uma requisição HTTP para a URL especificada por $fileUrl. O -s significa "silencioso", o que impede que o curl exiba informações desnecessárias na saída. A saída do comando é o conteúdo do arquivo na URL. O curl é uma ferramenta de linha de comando que permite fazer requisições HTTP para URLs remotas e obter os dados diretamente na saída do terminal. Isso significa que ele não precisa armazenar o conteúdo do arquivo no disco rígido local.
+### Schedule e Cron
 
-gzip -d: A saída do comando curl é piped (redirecionada) para o gzip, que descompacta o conteúdo com o formato gzip. Quando combinado com o curl, ele permite que o conteúdo do arquivo seja baixado em formato compactado e descompactado diretamente na saída do terminal, sem a necessidade de armazenar o arquivo compactado no disco rígido local.
+Durante o desafio, foi necessário utilizar o recurso de agendamento de tarefas do Laravel, conhecido como Schedule e Cron. Esses recursos são extremamente úteis, mas podem ser negligenciados dependendo do ambiente de desenvolvimento.
 
-jq -n '[inputs | select(. != null)] | .[:10]': Finalmente, a saída descompactada é piped para o jq, um processador de JSON, que realiza as seguintes ações:
+Foi possível configurar o agendamento das tarefas utilizando o método `schedule` no arquivo `app/Console/Kernel.php`. Por meio dessa configuração, foi possível definir o dia e a hora de execução das tarefas.
 
-jq -n: Inicia um novo objeto JSON vazio.
-[inputs | select(. != null)]: Lê a entrada do pipeline (saída do gzip) e filtra as entradas que não são nulas. Em seguida, é criado um array JSON com essas entradas.
-| .[:10]: O operador | é usado para passar a saída do filtro anterior para um novo filtro que pega apenas os 10 primeiros elementos do array.
-O resultado final é uma lista com os 10 primeiros elementos do conteúdo descompactado do arquivo na URL especificada. Quando combinado com o curl e o gzip, ele permite que o conteúdo do arquivo JSON seja processado diretamente na saída do terminal, sem a necessidade de armazenar o arquivo JSON no disco rígido local.
+Outras configurações relacionadas a variáveis de ambiente e horários podem ser ajustadas nos arquivos `config/app` e `.env`.
 
-Em resumo, a combinação dessas três ferramentas permite que o comando baixe, descompacte e processe um arquivo JSON sem a necessidade de armazenar o arquivo ou o conteúdo dele no disco rígido local. Perfeito! Era o que eu buscava. é possivel, com uma boa configuração de servidor, ajustar o tamanho da leitura para 20, 30, ou até mesmo 100 (que inclusive era o solicitado). Porém, de fato, talvez por falta de um conhecimento na área de servidor, consegui realizar a configuração limitando a 10 objetos de cada arquivo por meio deste comando.
+### Banco de Dados
 
-O restante seguiu de maneira mais natural, a inserção no banco pela API eu fiz de uma maneira até mais brusca. Mas estou ciente da ORM do laravel (consultas em um nivel mais alto de abstração) que também é tranquila de se aplicar.
+O teste sugeria a utilização do banco de dados MongoDB, porém, devido à minha familiaridade com o MySQL, optei por utilizá-lo neste projeto. O processo de manipulação de dados foi realizado por meio do terminal do Ubuntu e das migrações do Laravel.
 
-Arquivo principal da API: app/Console/Commands/ImportProductsCommand.php
+Foram criados bancos de dados, usuários, tabelas e consultas utilizando o MySQL. Essa prática permitiu explorar a utilização do terminal para gerenciamento de bancos de dados, o que proporcionou maior produtividade. Vale destacar a facilidade proporcionada pelas migrações do Laravel, que simplificaram bastante o processo de criação e manutenção do banco de dados.
 
+Principais arquivos envolvidos:
 
-==========================================
+- Arquivos de migração: `database/migrations`
 
-SCHEDULE E CRON:
-Uma coisa bacana deste desafio foi aprender a utilizar Schedule e Cron, que são recursos extremamente úteis mas que podem ficar um pouco esquecidos dependendo do ambiente em que se esteja. Não tinha muita prática mas também aprendi bastante estudando como aplicar e suas utilizações
-Também tive um aprendizado de como utilizar o crontab -e para setar as tasks.
+### Testes Unitários
 
-Arquivos: app/Console/Kernel.php (na function schedule onde você consegue setar dia/hora da execução)
-          config/app (podemos setar variaveis e horários)
-          .env (podemos setar uma variavel e horário)
+Foi realizada a criação de testes unitários utilizando a estrutura de testes do Laravel. No arquivo `tests/unit/ProductControllerTest.php`, foram implementados os testes para os métodos `testShow()` e `testIndex()` da controller `ProductController`.
 
-==========================================
+Durante o desenvolvimento dos testes unitários, foram identificados desafios, como a necessidade de criar um banco de dados alternativo exclusivo para os testes, a fim de evitar conflitos com os dados reais. Apesar de não ter configurado o arquivo `.env.testing`, foram criados dados fictícios de usuário e produto manualmente para concluir os testes unitários.
+Arquivo dos testes unitários:
 
-BANCO DE DADOS:
+- `tests/unit/ProductControllerTest.php`
 
-![produtos e cadastro banco](https://github.com/Dipezork/Products-Parser-20230105/blob/master/img2.png)
+## Considerações Finais
 
-Na descrição do teste tinha a sugestão de utilizar o banco de dados MongoDB. Nunca havia utilizado, mas experimentei, testei e tive um pouco de dificuldade por falta de prática, como na mesma sugestão possibilitou a escolha de outro banco, peguei um que estava mais habituado: MySQL.
-Como vão ver no video, toda manipulação de dados foi por meio do CMD do ubuntu e das migrations do laravel, criação de banco, usuário, tabela, querys em geral... Aproveitei a oportunidade para me inteirar da prática via CMD, sempre fui bem acostumado com a interface visual para gerenciar banco de dados MySQL, como por exemplo: MySQL Workbench, phpMyAdmin(web). Mas gostei de ter praticado este desafio pelo CMD, me deu mais opções de produtividade. É importante ressaltar também que utilizar o meio das migrations do Laravel é muito prático, ponto positivo para o framework! 
+Durante todo o projeto, busquei aderir às melhores práticas de engenharia de software, aplicando conceitos de design, controle de versão, documentação de código e testes automatizados. Essas práticas garantem a manutenibilidade, escalabilidade e colaboração no desenvolvimento de software, resultando em soluções de qualidade.
 
-Arquivos das migrations: database/migrations
-
-==========================================
-
-TESTES UNITARIOS:
-
-![produtos e cadastro banco](https://github.com/Dipezork/Products-Parser-20230105/blob/master/img1.png)
-
-Na estrutura tests/unit/
-Criei um arquivo chamado ProductControllerTest.php e nele desenvolvi um codigo para testShow() e testIndex(), com o intuito de testar 2 métodos criados na controller ProductController. Tive alguns problemas neste desenvolvimento e alguns aprendizados importantes, tais como:
-É interessante criar um banco de dados alternativo apenas para testes, para que não haja conflitos entre os dados testados e os originais.
-Para tal, entendi que seria interessante criar um banco de dados a parte e um .env.testing também a parte para identificar os testes. (Não cheguei a configurar o .env.testing).
-
-Como optei por não criar um banco de dados alternativos, criei manualmente dados ficticios de usuario e de produto para poder concluir os testes unitarios e ver na prática como que funciona. Fiquei bem feliz quando, após um amontoado de erros durante os testes unitarios, eu finalmente consegui ajustar o código e pude ver o verdinho do PASS.
-
-Arquivo dos testes unitarios: tests/unit/ProductControllerTest.php
-
-===========================================
-
-Video: https://www.loom.com/embed/a718d939156d42aa90e3588282afde5d
-
-This is a challenge by Coodesh
-
+Este projeto foi realizado como parte do desafio proposto pela Coodesh.
